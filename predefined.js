@@ -26,7 +26,7 @@ export class CPU extends jstop.Cell {
         `Freq: ${data.speed}GHz / ${data.speedMax}GHz
 Cores: ${data.cores}
 Processors: ${data.processors}
-Model: ${data.model}
+Model: ${data.brand.replace(/^Gen /, "")}
 Temp: ${d2.main}°C`,
         w,
         h,
