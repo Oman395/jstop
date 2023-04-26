@@ -1,0 +1,35 @@
+{
+  "scripts": {
+    "predefined": "./widgets.js"
+  },
+  "layout": [
+    [
+      {
+        "type": "CPU",
+        "x": 0,
+        "y": 0,
+        "width": 0.25,
+        "height": 0.5
+      },
+      {
+        "type": "Test",
+        "x": 0.25,
+        "y": 0,
+        "width": 0.75,
+        "height": 0.5
+      }
+    ],
+    [
+      {
+        "type": "Command",
+        "x": 0,
+        "y": 0.5,
+        "width": 1,
+        "height": 0.5,
+        "args": [
+          "ls"
+        ]
+      }
+    ]
+  ]
+}
