@@ -62,12 +62,14 @@ Temp: ${d2.main}°C`,
 }
 
 export class Command extends jstop.Cell {
-  constructor(x, y, w, h, parent, command) {
+  constructor(x, y, w, h, parent, cmd) {
     super(x, y, w, h, parent);
-    this.cmd = command;
+    this.cmd = cmd;
     this.setDraw(function (startX, startY, w, h) {
-      exec(this.cmd || "neofetch", (_e, stdout) => {
+      exec(this.cmd, (_e, stdout) => {
+        jstop.clear(startX, startY, w, h);
         jstop.write(stdout, w, h, startX, startY);
+        jstop.hideCursor();
       });
     });
   }

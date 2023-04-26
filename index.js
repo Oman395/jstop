@@ -145,7 +145,8 @@ export class CellGroup {
             item.y,
             item.width,
             item.height,
-            this
+            this,
+            ...(layout[i][j].args || [])
           )
         );
       }
@@ -199,6 +200,7 @@ async function _generateGroup(opts) {
           ...(opts.layout[x][y].args ?? [])
         ];
         layout[x][y] = new (scripts[c.type] ?? Cell)(...args);
+        layout[x][y].args = opts.layout[x][y].args;
       }
     }
   }
@@ -214,6 +216,7 @@ export async function init(interval = 250) {
   setInterval(() => {
     g.update();
     g.draw();
+    hideCursor();
   }, interval);
 }
 
