@@ -1,7 +1,5 @@
 {
-  "scripts": {
-    "predefined": "./widgets.js"
-  },
+  "scripts": ["predefined"],
   "layout": [
     [
       {
@@ -12,11 +10,12 @@
         "height": 0.5
       },
       {
-        "type": "Test",
+        "type": "Command",
         "x": 0.25,
         "y": 0,
         "width": 0.75,
-        "height": 0.5
+        "height": 0.5,
+        "args": ["lsblk"]
       }
     ],
     [
@@ -26,9 +25,7 @@
         "y": 0.5,
         "width": 1,
         "height": 0.5,
-        "args": [
-          "ls -la"
-        ]
+        "args": ["ls -la"]
       }
     ]
   ]
