@@ -1,4 +1,5 @@
 import { readFileSync } from "fs";
+import { fileURLToPath } from "node:url";
 import {
   hideCursor,
   showCursor,
@@ -344,8 +345,13 @@ export async function init(interval = 250, configPath = "./config.json") {
   }, interval);
 }
 
-clear();
-init(250);
+if (
+  process.argv?.[1] === fileURLToPath(import.meta.url) ||
+  process.argv?.[1] + ".js" === fileURLToPath(import.meta.url)
+) {
+  clear();
+  init(250);
+}
 
 export default {
   clear,
