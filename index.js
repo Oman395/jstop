@@ -9,23 +9,21 @@ import {
   box
 } from "./drawing.js";
 
-// TODO: CLI Arguments
-const OPTS = JSON.parse(readFileSync("./layout.json"));
-
 // TODO: Define CHARS in opts
 let CHARS = {
-  h: "─",
-  v: "│",
-  tl: "╭",
-  tr: "╮",
-  bl: "╰",
-  br: "╯",
-  cu: "┴",
-  cr: "├",
-  cd: "┬",
-  cl: "┤",
-  c: "┼"
-};
+    h: "─",
+    v: "│",
+    tl: "╭",
+    tr: "╮",
+    bl: "╰",
+    br: "╯",
+    cu: "┴",
+    cr: "├",
+    cd: "┬",
+    cl: "┤",
+    c: "┼"
+  },
+  OPTS;
 
 /**
  * @typedef {Object} Neighbors
@@ -311,11 +309,33 @@ async function _generateGroup(opts) {
 async function generateGroup(opts) {
   return new Promise((res) => _generateGroup(opts).then((r) => res(r)));
 }
+
+const optToChar = {
+  horizontal: "h",
+  vertical: "v",
+  topLeft: "tl",
+  topRight: "tr",
+  bottomLeft: "bl",
+  bottomRight: "br",
+  crossUp: "cu",
+  crossRight: "cr",
+  crossDown: "cd",
+  crossLeft: "cl",
+  crossCenter: "c"
+};
+
 /**
  * Initialize jstop
  * @param {number} interval - Interval to update/draw on
  */
-export async function init(interval = 250) {
+export async function init(interval = 250, configPath = "./config.json") {
+  // TODO: CLI Arguments
+  OPTS = JSON.parse(readFileSync(configPath));
+  if (OPTS.characters)
+    Object.keys(OPTS.characters).forEach(
+      (key) =>
+        (CHARS[optToChar[key]] = OPTS.characters[key] ?? CHARS[optToChar[key]])
+    );
   let g = await generateGroup(OPTS);
   setInterval(() => {
     g.update();
