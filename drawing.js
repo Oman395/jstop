@@ -1,3 +1,10 @@
+const ansiRegex = new RegExp(
+  [
+    "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)",
+    "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))"
+  ].join("|"),
+  "gm"
+);
 /**
  * Take a wild guess
  */
@@ -33,6 +40,23 @@ export function color(r, g, b) {
   process.stdout.write(`\x1b[38;2;${r};${g};${b}m`);
 }
 
+export function removeAnsiCodes(str) {
+  // Pattern shamelessly stolen from https://github.com/chalk/ansi-regex
+  // Here's its license:
+  /*
+    MIT License
+
+    Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  */
+  return str.replaceAll(ansiRegex, "");
+}
+
 /**
  * Probably the most called function I've written here. This takes in a string, and prints it such that it fits within a set of borders. X and Y should probably be before width and height in the params, but I don't want to edit every single time I've called it.
  * @param {string} string - String to print.
@@ -43,7 +67,8 @@ export function color(r, g, b) {
  */
 export function write(string, w = Infinity, h = Infinity, x = null, y = null) {
   // Get an array of w sized strings so that we don't exceed the width
-  let arr = string.match(new RegExp(`.{1,${w}}`, "g"));
+  // We do it in this slow way because otherwise we would have issues with ANSI escape sequences
+  let arr = string.match(new RegExp(`([^\n]{1,${w}})`, "gm"));
   // This fixes more bugs than you'd expect
   if (arr === null) return;
   // Remove anything that would go too far down
@@ -194,5 +219,6 @@ export default {
   cursorTo,
   write,
   clear,
-  graph
+  graph,
+  removeAnsiCodes
 };

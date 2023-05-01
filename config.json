@@ -20,12 +20,11 @@
     ],
     [
       {
-        "type": "Command",
+        "type": "Neofetch",
         "x": 0,
         "y": 0.5,
         "width": 1,
-        "height": 0.5,
-        "args": ["ls -la"]
+        "height": 0.5
       }
     ]
   ]

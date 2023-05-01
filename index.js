@@ -7,7 +7,8 @@ import {
   clear,
   cursorTo,
   graph,
-  box
+  box,
+  removeAnsiCodes
 } from "./drawing.js";
 
 // TODO: Define CHARS in opts
@@ -361,6 +362,7 @@ export default {
   hideCursor,
   init,
   graph,
+  removeAnsiCodes,
   Cell,
   CellGroup
 };

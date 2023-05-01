@@ -2,6 +2,14 @@ import jstop from "./index.js";
 import si from "systeminformation";
 import { exec } from "node:child_process";
 
+function commandOutput(cmd) {
+  return new Promise((res) => {
+    exec(cmd, (_e, stdout) => {
+      res(stdout);
+    });
+  });
+}
+
 export class CPU extends jstop.Cell {
   constructor(x, y, w, h, parent) {
     super(x, y, w, h, parent);
@@ -56,13 +64,39 @@ export class Command extends jstop.Cell {
     super(x, y, w, h, parent);
     // I don't think I need this, but eh, better safe than sorry
     this.cmd = cmd;
-    this.setDraw(function (startX, startY, w, h) {
-      exec(this.cmd, (_e, stdout) => {
-        jstop.clear(startX, startY, w, h);
-        jstop.write(stdout, w, h, startX, startY);
-        // Some commands will end with a show cursor command, so this fixes that
-        jstop.hideCursor();
-      });
+    this.setDraw(async function (startX, startY, w, h) {
+      let str = await commandOutput(this.cmd);
+      jstop.clear(startX, startY, w, h);
+      jstop.write(str, w, h, startX, startY);
+      // Some commands will end with a show cursor command, so this fixes that
+      jstop.hideCursor();
     });
   }
 }
+
+export class Neofetch extends jstop.Cell {
+  // Neofetch renders super weirdly, so I just made this
+  constructor(x, y, w, h, percent) {
+    super(x, y, w, h, percent);
+    this.setDraw(async function (startX, startY, w, h) {
+      let logo = await commandOutput("neofetch -L");
+      let info = await commandOutput("neofetch --off");
+      let logoArr = logo.split("\n");
+      // Reset formatting, just incase
+      jstop.clear(startX, startY, w, h);
+      process.stdout.write("\x1b[0m");
+      let longest = logoArr.sort(function (a, b) {
+        return (
+          jstop.removeAnsiCodes(b).length - jstop.removeAnsiCodes(a).length
+        );
+      });
+      let length = longest.length;
+      jstop.write(logo, w, h, startX, startY);
+      jstop.write(info, w, h, startX + length + 1, startY);
+      jstop.hideCursor();
+    });
+  }
+}
+
+let test = new Neofetch(0, 0, 1, 1, 1);
+test.draw();
