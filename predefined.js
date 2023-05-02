@@ -10,51 +10,22 @@ function commandOutput(cmd) {
   });
 }
 
+// This is pretty much just a direct clone of every single gotop widget.
+// This package is inspired heavily by gotop, so I want to be at the very least comperable in terms of widgets.
+
 export class CPU extends jstop.Cell {
   constructor(x, y, w, h, parent) {
     super(x, y, w, h, parent);
-    // Initialize array to store the history of the CPU frequency
-    this.cpuHist = new Array(20).fill(0);
-    // This function sets the #draw property in the Cell base class, and needs to be used
-    // for any custom cells to work.
     this.setDraw(async function (startX, startY, w, h) {
-      // Reset formatting, just incase
-      process.stdout.write("\x1b[0m");
-      jstop.hideCursor();
-      let data = await si.cpu();
-      // Remove oldest bit of data from history, add newest
-      this.cpuHist.shift();
-      this.cpuHist.push(
-        (data.speed - data.speedMin) / (data.speedMax - data.speedMin)
-      );
-      let d2 = await si.cpuTemperature();
-      // Clear the drawable area
+      let str = "";
+      let data = await si.cpuCurrentSpeed();
       jstop.clear(startX, startY, w, h);
-      jstop.write(
-        `Freq: ${data.speed}GHz / ${data.speedMax}GHz
-Cores: ${data.cores}
-Processors: ${data.processors}
-Model: ${data.brand.replace(/^Gen /, "")}
-Temp: ${d2.main}°C`,
-        w,
-        h,
-        startX,
-        startY
-      );
-      jstop.graph(this.cpuHist, startX, startY + 5, w, h - 6, {
-        fill: true,
-        fillDir: 1,
-        normalized: false,
-        scale: true,
-        color: [
-          [215, 2, 112],
-          [215, 2, 112],
-          [115, 79, 150],
-          [0, 56, 168],
-          [0, 56, 168]
-        ],
-        unit: "GHz"
+      data.cores.forEach((core, i) => {
+        str += `CPU${i.toString().padStart(2, "0")}${Math.floor(core)
+          .toString()
+          .padStart(5, " ")}%\n`;
       });
+      jstop.write(str, w - 4, h - 2, startX + 2, startY + 1);
     });
   }
 }
