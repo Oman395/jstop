@@ -14,18 +14,33 @@ function commandOutput(cmd) {
 // This package is inspired heavily by gotop, so I want to be at the very least comperable in terms of widgets.
 
 export class CPU extends jstop.Cell {
-  constructor(x, y, w, h, parent) {
+  constructor(x, y, w, h, parent, historyLength = 10) {
     super(x, y, w, h, parent);
+    this.histories = [];
     this.setDraw(async function (startX, startY, w, h) {
       let str = "";
-      let data = await si.cpuCurrentSpeed();
+      let str2 = "";
+      let data = await si.currentLoad();
       jstop.clear(startX, startY, w, h);
-      data.cores.forEach((core, i) => {
-        str += `CPU${i.toString().padStart(2, "0")}${Math.floor(core)
+      data.cpus.forEach((core, i) => {
+        if (this.histories[i] === undefined)
+          this.histories[i] = new Array(historyLength).fill(0);
+        this.histories[i].shift();
+        this.histories[i].push(core.load / 100);
+        jstop.graph(this.histories[i], startX, startY, w, h - 1, {
+          color: [7 - ((i + 3) % 8)],
+          normalized: false
+        });
+        str += `${jstop.getColorString(7 - ((i + 3) % 8))}CPU${i
           .toString()
-          .padStart(5, " ")}%\n`;
+          .padStart(2, "0")}\n`;
+        str2 += `${jstop.getColorString(7 - ((i + 3) % 8))}${Math.floor(
+          core.load
+        ).toString()}%\n`;
       });
       jstop.write(str, w - 4, h - 2, startX + 2, startY + 1);
+      jstop.write(str2, w - 12, h - 2, startX + 10, startY + 1);
+      process.stdout.write("\x1b[0m"); // Clear formatting, just in case
     });
   }
 }
@@ -36,6 +51,7 @@ export class Command extends jstop.Cell {
     // I don't think I need this, but eh, better safe than sorry
     this.cmd = cmd;
     this.setDraw(async function (startX, startY, w, h) {
+      process.stdout.write("\x1b[0m"); // Clear formatting, just in case
       let str = await commandOutput(this.cmd);
       jstop.clear(startX, startY, w, h);
       jstop.write(str, w, h, startX, startY);

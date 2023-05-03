@@ -7,6 +7,8 @@ import {
   clear,
   cursorTo,
   graph,
+  color,
+  getColorString,
   box,
   removeAnsiCodes
 } from "./drawing.js";
@@ -363,6 +365,8 @@ export default {
   init,
   graph,
   removeAnsiCodes,
+  color,
+  getColorString,
   Cell,
   CellGroup
 };

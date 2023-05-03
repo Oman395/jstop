@@ -28,16 +28,19 @@ export function cursorTo(x, y) {
   process.stdout.write(`\x1b[${y};${x}H`);
 }
 
+export function getColorString(r, g, b) {
+  return g === undefined ? `\x1b[38;5;${r}m` : `\x1b[38;2;${r};${g};${b}m`;
+}
+
 /**
  * Color text. Currently only supports RGB values.
  * Note: MAKE SURE ALL COLORS ARE INTEGERS!
- * @param {number} r - Red value to use, 0-255
- * @param {number} g - Green value to use, 0-255
- * @param {number} b - Blue value to use, 0-255
+ * @param {number} r - Red value to use, 0-255, or the 256 color ID
+ * @param {number} [g] - Green value to use, 0-255
+ * @param {number} [b] - Blue value to use, 0-255
  */
 export function color(r, g, b) {
-  // TODO
-  process.stdout.write(`\x1b[38;2;${r};${g};${b}m`);
+  process.stdout.write(getColorString(r, g, b));
 }
 
 export function removeAnsiCodes(str) {
@@ -206,7 +209,11 @@ export function graph(data, xS, yS, width, height, opts) {
             write(char, 1, 1, Math.round(x), pos);
           }
         }
-      } else write(char, 1, 1, Math.round(x), Math.round(y));
+      } else {
+        let c = opts.color[Math.round((opts.color.length - 1) * (y / height))];
+        color(...c);
+        write(char, 1, 1, Math.round(x), Math.round(y));
+      }
       x += dir[0];
       y += dir[1];
     }
@@ -220,5 +227,7 @@ export default {
   write,
   clear,
   graph,
-  removeAnsiCodes
+  removeAnsiCodes,
+  color,
+  getColorString
 };
