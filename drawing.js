@@ -164,7 +164,7 @@ export function graph(data, xS, yS, width, height, opts) {
   let char = opts.char;
   // Allow people to pass [r,g,b] rather than [[r,g,b]] if they only want a solid color
   if (!Array.isArray(opts.color[0])) opts.color = [opts.color];
-  let xStep = width / data.length;
+  let xStep = width / (data.length - 1);
   // We iterate 1 less than the data length, because we draw from the current item to the next
   for (let i = 0; i < data.length - 1; i++) {
     // Starting position
@@ -179,7 +179,7 @@ export function graph(data, xS, yS, width, height, opts) {
     let length = Math.sqrt(delta[0] ** 2 + delta[1] ** 2);
     let dir = [delta[0] / length, delta[1] / length];
     // Draw the line from the start to the target
-    for (let j = 0; j < length; j++) {
+    for (let j = 0; j <= length; j++) {
       // Fill will either go from each point up to the upper bound, or to the lower bound.
       // We do this by literally just printing out extra characters 1 by 1.
       if (opts.fill) {
@@ -193,26 +193,26 @@ export function graph(data, xS, yS, width, height, opts) {
         //
         // TODO: Fix this
         if (opts.fillDir < 0) {
-          for (let pos = Math.round(y); pos >= yS; pos--) {
+          for (let pos = Math.floor(y); pos >= yS; pos--) {
             let col =
-              opts.color[Math.round(opts.color.length * (pos / height))] ??
+              opts.color[Math.floor(opts.color.length * (pos / height))] ??
               opts.color[opts.color.length - 1];
             color(...col);
-            write(char, 1, 1, Math.round(x), pos);
+            write(char, 1, 1, Math.floor(x), pos);
           }
         } else {
-          for (let pos = yS + height; pos >= Math.round(y); pos--) {
+          for (let pos = yS + height; pos >= Math.floor(y); pos--) {
             let col =
-              opts.color[Math.round(opts.color.length * (pos / height))] ??
+              opts.color[Math.floor(opts.color.length * (pos / height))] ??
               opts.color[opts.color.length - 1];
             color(...col);
-            write(char, 1, 1, Math.round(x), pos);
+            write(char, 1, 1, Math.floor(x), pos);
           }
         }
       } else {
-        let c = opts.color[Math.round((opts.color.length - 1) * (y / height))];
+        let c = opts.color[Math.floor((opts.color.length - 1) * (y / height))];
         color(...c);
-        write(char, 1, 1, Math.round(x), Math.round(y));
+        write(char, 1, 1, Math.floor(x), Math.round(y));
       }
       x += dir[0];
       y += dir[1];

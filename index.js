@@ -370,3 +370,11 @@ export default {
   Cell,
   CellGroup
 };
+
+function exit() {
+  showCursor();
+  process.exit();
+}
+
+process.on("exit", exit);
+process.on("SIGINT", exit);
