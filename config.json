@@ -3,28 +3,28 @@
   "layout": [
     [
       {
-        "type": "CPU",
+        "type": "Neofetch",
         "x": 0,
         "y": 0,
-        "width": 0.25,
+        "width": 0.5,
         "height": 0.5
       },
       {
-        "type": "Command",
-        "x": 0.25,
+        "type": "CPU",
+        "x": 0.5,
         "y": 0,
-        "width": 0.75,
-        "height": 0.5,
-        "args": ["lsblk"]
+        "width": 0.5,
+        "height": 0.5
       }
     ],
     [
       {
-        "type": "Neofetch",
+        "type": "Command",
         "x": 0,
         "y": 0.5,
-        "width": 1,
-        "height": 0.5
+        "width": 1.0,
+        "height": 0.5,
+        "args": ["ls -la"]
       }
     ]
   ]

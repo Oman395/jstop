@@ -5,6 +5,8 @@ const ansiRegex = new RegExp(
   ].join("|"),
   "gm"
 );
+const ansiString =
+  "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))";
 /**
  * Take a wild guess
  */
@@ -71,7 +73,7 @@ export function removeAnsiCodes(str) {
 export function write(string, w = Infinity, h = Infinity, x = null, y = null) {
   // Get an array of w sized strings so that we don't exceed the width
   // We do it in this slow way because otherwise we would have issues with ANSI escape sequences
-  let arr = string.match(new RegExp(`([^\n]{1,${w}})`, "gm"));
+  let arr = string.match(new RegExp(`((${ansiString})|[^\n]){1,${w}}`, "gm"));
   // This fixes more bugs than you'd expect
   if (arr === null) return;
   // Remove anything that would go too far down

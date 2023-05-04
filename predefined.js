@@ -63,8 +63,8 @@ export class Command extends jstop.Cell {
 
 export class Neofetch extends jstop.Cell {
   // Neofetch renders super weirdly, so I just made this
-  constructor(x, y, w, h, percent) {
-    super(x, y, w, h, percent);
+  constructor(x, y, w, h, parent) {
+    super(x, y, w, h, parent);
     this.setDraw(async function (startX, startY, w, h) {
       let logo = await commandOutput("neofetch -L");
       let info = await commandOutput("neofetch --off");
@@ -77,13 +77,19 @@ export class Neofetch extends jstop.Cell {
           jstop.removeAnsiCodes(b).length - jstop.removeAnsiCodes(a).length
         );
       });
-      let length = longest.length;
+      let length = jstop.removeAnsiCodes(longest[0]).length;
       jstop.write(logo, w, h, startX, startY);
       jstop.write(info, w, h, startX + length + 1, startY);
       jstop.hideCursor();
+      // Figure how large our new size should be
+      let height = info.split("\n").length;
+      let longest2 = info.split("\n").sort(function (a, b) {
+        return (
+          jstop.removeAnsiCodes(b).length - jstop.removeAnsiCodes(a).length
+        );
+      });
+      let maximumW = length + jstop.removeAnsiCodes(longest2[0]).length + 1;
+      this.updateDimensionsAbsoluteCoordinates(maximumW + 2, height);
     });
   }
 }
-
-let test = new Neofetch(0, 0, 1, 1, 1);
-test.draw();

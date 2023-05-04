@@ -1,0 +1,38 @@
+[2J[0m<ref *1> CellGroup {
+  x: 0,
+  y: 0,
+  width: 1,
+  height: 1,
+  cells: [
+    CPU {
+      x: 0,
+      y: 0,
+      width: 0.25,
+      height: 0.5,
+      parent: [Circular *1],
+      upCount: 1,
+      histories: [],
+      neighbors: [Object]
+    },
+    Command {
+      x: 0.25,
+      y: 0,
+      width: 0.75,
+      height: 0.5,
+      parent: [Circular *1],
+      upCount: 1,
+      cmd: 'lsblk',
+      neighbors: [Object]
+    },
+    Neofetch {
+      x: 0,
+      y: 0.5,
+      width: 1,
+      height: 0.5,
+      parent: [Circular *1],
+      upCount: 1,
+      neighbors: [Object]
+    }
+  ]
+}
+[2J[0m[?25l

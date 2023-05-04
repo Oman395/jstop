@@ -71,16 +71,25 @@ function verifyDimensions(cell) {
   // This makes sure that every cell is expanded to fit the screen
   cell.neighbors.right.forEach((n) => {
     let deltaR = cell.x + cell.width - n.x;
-    cell.width -= deltaR;
+    n.x += deltaR;
+    n.width -= deltaR;
   });
   cell.neighbors.up.forEach((n) => {
     let deltaU = cell.y + cell.height - n.y;
     cell.height += deltaU;
   });
-  if (cell.right === null) cell.width += 1.0 - (cell.x + cell.width);
-  if (cell.left === null) (cell.width += cell.y), (cell.y = 0);
-  if (cell.top === null) cell.height += 1.0 - (cell.y + cell.height);
-  if (cell.bottom === null) (cell.height += cell.y), (cell.y = 0);
+  cell.neighbors.down.forEach((n) => {
+    let deltaU = n.y + n.height - cell.y;
+    n.height -= deltaU;
+  });
+
+  if (cell.neighbors.right?.length === 0)
+    cell.width += 1.0 - (cell.x + cell.width);
+  if (cell.neighbors.left?.length === 0) (cell.width += cell.x), (cell.x = 0);
+  if (cell.neighbors.top?.length === 0)
+    cell.height += 1.0 - (cell.y + cell.height);
+  if (cell.neighbors.bottom?.length === 0)
+    (cell.height += cell.y), (cell.y = 0);
   return cell;
 }
 
@@ -155,6 +164,20 @@ export class Cell {
   addHeight(delta) {
     this.height += delta;
   }
+  updateDimensionsAbsoluteCoordinates(w, h) {
+    let finalW = w / process.stdout.columns;
+    let finalH = h / process.stdout.rows;
+    if (finalW > 1) finalW = 1;
+    if (finalH > 1) finalH = 1;
+    this.updateDimensions(finalW, finalH);
+  }
+  verifyDimensions() {
+    let ver = verifyDimensions(this);
+    this.height = ver.height;
+    this.width = ver.width;
+    this.x = ver.x;
+    this.y = ver.y;
+  }
   /**
    *Used to scale cells; if you pass in new width/height values (relative of course) it will handle
    * all the scaling of cells around them
@@ -177,7 +200,7 @@ export class Cell {
     this.width = nT.width;
     this.height = nT.height;
     Object.keys(this.neighbors).forEach((key) =>
-      this.neighbors[key].forEach((n) => (n = verifyDimensions(n)))
+      this.neighbors[key].forEach((n) => n.verifyDimensions())
     );
   }
   /**
@@ -213,7 +236,6 @@ export class CellGroup {
     for (let i = 0; i < layout.length; i++) {
       for (let j = 0; j < layout[i].length; j++) {
         let item = layout[i][j];
-
         this.cells.push(
           new layout[i][j].constructor(
             item.x,
@@ -224,6 +246,7 @@ export class CellGroup {
             ...(layout[i][j].args || [])
           )
         );
+        this.cells[this.cells.length - 1].parent = this;
       }
     }
     this.update();
@@ -253,6 +276,13 @@ export class CellGroup {
       cell.draw(sx + 1, sy + 1, w - 2, h - 2);
       process.stdout.write("\x1b[?1049h");
       box(sx, sy, w, h, CHARS);
+      write(
+        ` ${cell.constructor.name.replaceAll("_", " ")} `,
+        w,
+        h,
+        sx + 2,
+        sy
+      );
     });
   }
 }
@@ -376,5 +406,4 @@ function exit() {
   process.exit();
 }
 
-process.on("exit", exit);
 process.on("SIGINT", exit);
