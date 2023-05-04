@@ -216,6 +216,7 @@ export function graph(data, xS, yS, width, height, opts) {
       }
       x += dir[0];
       y += dir[1];
+      if (x > xS + width - 1) x = xS + width - 1;
     }
   }
 }
